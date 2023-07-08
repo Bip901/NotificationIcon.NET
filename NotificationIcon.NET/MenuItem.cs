@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace NotificationIcon.NET;
 
-public record class MenuItem(string Text)
+public record class MenuItem
 {
     public class UpdateRequiredEventArgs : EventArgs
     {
@@ -14,6 +15,22 @@ public record class MenuItem(string Text)
     }
 
     internal event EventHandler<UpdateRequiredEventArgs>? UpdateRequired;
+
+    public string Text
+    {
+        get => _text;
+
+        [MemberNotNull(nameof(_text))]
+        set
+        {
+            if (_text != value)
+            {
+                _text = value;
+                UpdateRequired?.Invoke(this, UpdateRequiredEventArgs.Default);
+            }
+        }
+    }
+    private string _text;
 
     public bool IsDisabled
     {
@@ -30,7 +47,7 @@ public record class MenuItem(string Text)
     private bool _isDisabled;
 
     /// <summary>
-    /// Whether the item is currently checked, or null if the item is uncheckable.
+    /// Whether the item is currently checked, or null if the item is not a checkbox.
     /// </summary>
     public bool? IsChecked
     {
@@ -58,6 +75,11 @@ public record class MenuItem(string Text)
         }
     }
     private IReadOnlyList<MenuItem>? _subMenu;
+
+    public MenuItem(string text)
+    {
+        Text = text;
+    }
 
     internal virtual void OnClick(MenuItemClickEventArgs args)
     {
