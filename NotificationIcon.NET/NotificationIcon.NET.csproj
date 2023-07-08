@@ -11,10 +11,10 @@
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 		<Authors>Bip901</Authors>
 		<Copyright>Ori Almagor</Copyright>
-		<PackageProjectUrl></PackageProjectUrl>
 		<Description>A cross-platform C# library to display a notification icon in the taskbar notification area ("tray").</Description>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<RepositoryUrl>https://github.com/Bip901/NotificationIcon.NET</RepositoryUrl>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="$(Configuration.Contains(Debug))">
