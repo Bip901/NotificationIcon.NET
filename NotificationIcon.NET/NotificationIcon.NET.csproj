@@ -7,7 +7,7 @@
 		<Nullable>enable</Nullable>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 		<Configurations>Debug-Portable;Release-Windows;Release-Linux;Release-Portable</Configurations>
-		<Version>1.0.0</Version>
+		<Version>1.1.0</Version>
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 		<Authors>Bip901</Authors>
 		<Copyright>Ori Almagor</Copyright>
@@ -15,6 +15,7 @@
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<RepositoryUrl>https://github.com/Bip901/NotificationIcon.NET</RepositoryUrl>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<RuntimeIdentifiers>win-x64;linux-x64;</RuntimeIdentifiers>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="$(Configuration.Contains(Debug))">
@@ -26,43 +27,40 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<Compile Remove="native\build\**" />
-		<EmbeddedResource Remove="native\build\**" />
-		<None Remove="native\build\**" />
-	</ItemGroup>
-
-	<ItemGroup>
 		<Folder Include="native\src\" />
 		<Folder Include="screenshots\" />
 	</ItemGroup>
 
-	<!--Portable-Specific-->
+	<!--When compiling as Portable (includes all platforms together)-->
 	<PropertyGroup Condition="$(Configuration.Contains(Portable))">
 		<TargetFramework>net7.0</TargetFramework>
 		<DefineConstants>$(DefineConstants);PORTABLE</DefineConstants>
 	</PropertyGroup>
-	<ItemGroup Condition="$(Configuration.Contains(Portable))">
-		<Content Include="prebuilt\**">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	<ItemGroup Condition="$(Configuration.Contains(Linux)) Or $(Configuration.Contains(Portable))">
+		<Content Include="prebuilt\linux-*\native\*">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+			<PackagePath>runtimes/</PackagePath>
+		</Content>
+	</ItemGroup>
+	<ItemGroup Condition="$(Configuration.Contains(Windows)) Or $(Configuration.Contains(Portable))">
+		<Content Include="prebuilt\win-*\native\*">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+			<PackagePath>runtimes/</PackagePath>
 		</Content>
 	</ItemGroup>
 
-	<!--Linux-Specific-->
+	<!--When compiling as Linux-only-->
 	<PropertyGroup Condition="$(Configuration.Contains(Linux))">
 		<TargetFramework>net7.0-linux</TargetFramework>
 		<DefineConstants>$(DefineConstants);LINUX</DefineConstants>
 	</PropertyGroup>
-
-	<!--Windows-Specific-->
+	
+	<!--When compiling as Windows-only-->
 	<PropertyGroup Condition="$(Configuration.Contains(Windows))">
 		<TargetFramework>net7.0-windows</TargetFramework>
 		<DefineConstants>$(DefineConstants);WINDOWS</DefineConstants>
 	</PropertyGroup>
-	<ItemGroup Condition="$(Configuration.Contains(Windows))">
-		<Content Include="prebuilt\win-*\notification_icon.dll">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</Content>
-	</ItemGroup>
+
 	<ItemGroup>
 	  <None Update="README.md">
 	    <Pack>True</Pack>
