@@ -13,7 +13,7 @@ namespace NotificationIcon.NET
 {
     internal partial class WindowsNotifyIcon : NotifyIcon
     {
-        private const string DLL_PATH = "prebuilt/win-x64/notification_icon.dll";
+        private const string DLL_PATH = "runtimes/win-x64/native/notification_icon.dll";
 
         /// <exception cref="InvalidOperationException"></exception>
         public WindowsNotifyIcon(string iconPath, IReadOnlyList<MenuItem> menuItems) : base(iconPath, menuItems)

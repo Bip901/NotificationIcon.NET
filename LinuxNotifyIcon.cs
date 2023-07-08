@@ -13,7 +13,7 @@ namespace NotificationIcon.NET
 {
     internal partial class LinuxNotifyIcon : NotifyIcon
     {
-        private const string LIBRARY_PATH = "prebuilt/linux-x64/libnotification_icon.so.1.1.0";
+        private const string LIBRARY_PATH = "runtimes/linux-x64/native/libnotification_icon.so.1.1.0";
 
         /// <exception cref="InvalidOperationException"></exception>
         public LinuxNotifyIcon(string iconPath, IReadOnlyList<MenuItem> menuItems) : base(iconPath, menuItems)
