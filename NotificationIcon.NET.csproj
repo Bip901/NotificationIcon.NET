@@ -1,0 +1,60 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<OutputType>Library</OutputType>
+		<TargetFramework>net7.0</TargetFramework>
+		<ImplicitUsings>disable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+		<Configurations>Debug-Portable;Release-Windows;Release-Linux;Release-Portable</Configurations>
+		<VersionPrefix>1.0.0</VersionPrefix>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="$(Configuration.Contains(Debug))">
+		<DefineConstants>DEBUG</DefineConstants>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="$(Configuration.Contains(Release))">
+		<DefineConstants>RELEASE</DefineConstants>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<Compile Remove="native\build\**" />
+		<EmbeddedResource Remove="native\build\**" />
+		<None Remove="native\build\**" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Folder Include="native\src\" />
+		<Folder Include="screenshots\" />
+	</ItemGroup>
+
+	<!--Portable-Specific-->
+	<PropertyGroup Condition="$(Configuration.Contains(Portable))">
+		<TargetFramework>net7.0</TargetFramework>
+		<DefineConstants>$(DefineConstants);PORTABLE</DefineConstants>
+	</PropertyGroup>
+	<ItemGroup Condition="$(Configuration.Contains(Portable))">
+		<Content Include="prebuilt\**">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+	</ItemGroup>
+
+	<!--Linux-Specific-->
+	<PropertyGroup Condition="$(Configuration.Contains(Linux))">
+		<TargetFramework>net7.0-linux</TargetFramework>
+		<DefineConstants>$(DefineConstants);LINUX</DefineConstants>
+	</PropertyGroup>
+
+	<!--Windows-Specific-->
+	<PropertyGroup Condition="$(Configuration.Contains(Windows))">
+		<TargetFramework>net7.0-windows</TargetFramework>
+		<DefineConstants>$(DefineConstants);WINDOWS</DefineConstants>
+	</PropertyGroup>
+	<ItemGroup Condition="$(Configuration.Contains(Windows))">
+		<Content Include="prebuilt\win-*\notification_icon.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+	</ItemGroup>
+
+</Project>
