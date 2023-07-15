@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.0.0)
 
-project(notification_icon VERSION 1.1.0)
+project(notification_icon VERSION 1.1.1)
 
 add_library(notification_icon SHARED src/main.c src/tray.h)
 if(UNIX AND NOT APPLE)
