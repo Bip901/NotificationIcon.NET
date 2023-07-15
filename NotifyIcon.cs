@@ -121,12 +121,13 @@ namespace NotificationIcon.NET
         {
             if (!loadedNativeLibrary)
             {
-                //Attempt loading from '.' first (if the hosting project was compiled with a RID)
-                if (!NativeLibrary.TryLoad(nativeLibraryName, out _))
+                //Attempt loading from the base directory ('.') first (if the hosting project was compiled with a RID)
+                string baseDirectory = AppContext.BaseDirectory;
+                if (!NativeLibrary.TryLoad(Path.Join(baseDirectory, nativeLibraryName), out _))
                 {
                     //Fallback to runtimes/{RID}/native (if the hosting project is portable)
                     string rid = GetNonVersionSpecificRID();
-                    string path = string.Join(Path.DirectorySeparatorChar, "runtimes", rid, "native", nativeLibraryName);
+                    string path = Path.Join(baseDirectory, "runtimes", rid, "native", nativeLibraryName);
                     try
                     {
                         NativeLibrary.Load(path);
