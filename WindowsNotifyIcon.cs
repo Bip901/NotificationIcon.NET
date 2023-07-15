@@ -104,7 +104,7 @@ namespace NotificationIcon.NET
                 {
                     text = current.Text,
                     isDisabled = current.IsDisabled ? 1 : 0,
-                    isChecked = current.IsChecked == true ? 1 : 0,
+                    isChecked = current.IsChecked == null ? -1 : (current.IsChecked == true ? 1 : 0),
                     callback = Marshal.GetFunctionPointerForDelegate<MenuItemCallback>(menuPtr => current.OnClick(new MenuItemClickEventArgs(this))),
                 };
                 if (current.SubMenu != null)
