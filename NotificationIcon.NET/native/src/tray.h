@@ -162,7 +162,7 @@ static id _tray_menu(struct tray_menu* m) {
 				objc_msgSend((id)objc_getClass("NSString"), sel_registerName("stringWithUTF8String:"), ""));
 
 			objc_msgSend(menuItem, sel_registerName("setEnabled:"), (m->disabled ? false : true));
-			objc_msgSend(menuItem, sel_registerName("setState:"), (m->checked ? 1 : 0));
+			objc_msgSend(menuItem, sel_registerName("setState:"), ((m->checked && m->checked != -1) ? 1 : 0));
 			objc_msgSend(menuItem, sel_registerName("setRepresentedObject:"),
 				objc_msgSend((id)objc_getClass("NSValue"), sel_registerName("valueWithPointer:"), m));
 
@@ -320,7 +320,7 @@ static HMENU _tray_menu(struct tray_menu* m, UINT* id) {
 			if (m->disabled) {
 				item.fState |= MFS_DISABLED;
 			}
-			if (m->checked) {
+			if (m->checked && m->checked != -1) {
 				item.fState |= MFS_CHECKED;
 			}
 			item.wID = *id;
