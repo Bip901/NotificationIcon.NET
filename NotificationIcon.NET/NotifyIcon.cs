@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -23,6 +24,8 @@ namespace NotificationIcon.NET
     /// </remarks>
     public abstract class NotifyIcon : IDisposable
     {
+        private static bool loadedNativeLibrary;
+
         /// <summary>
         /// A path to an icon on the file system. For Windows, this should be an ICO file. For Unix, this should be a PNG.
         /// </summary>
@@ -84,11 +87,57 @@ namespace NotificationIcon.NET
         }
 
         /// <summary>
+        /// Returns the non-version-specific Runtime ID of the current system.
+        /// </summary>
+        /// <returns>A string similar to e.g. "win-x64", "win-x86", "linux-arm64".</returns>
+        /// <exception cref="PlatformNotSupportedException"></exception>
+        private static string GetNonVersionSpecificRID()
+        {
+            string rid;
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                rid = "win";
+            }
+            else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+            {
+                rid = "linux";
+            }
+            else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+            {
+                rid = "osx";
+            }
+            else
+            {
+                throw new PlatformNotSupportedException();
+            }
+            return rid + "-" + RuntimeInformation.OSArchitecture.ToString().ToLowerInvariant();
+        }
+
+        /// <summary>
         /// Creates a new <see cref="NotifyIcon"/>.
         /// </summary>
         /// <exception cref="InvalidOperationException"></exception>
-        protected NotifyIcon(string iconPath, IReadOnlyList<MenuItem> menuItems)
+        protected NotifyIcon(string nativeLibraryName, string iconPath, IReadOnlyList<MenuItem> menuItems)
         {
+            if (!loadedNativeLibrary)
+            {
+                //Attempt loading from '.' first (if the hosting project was compiled with a RID)
+                if (!NativeLibrary.TryLoad(nativeLibraryName, out _))
+                {
+                    //Fallback to runtimes/{RID}/native (if the hosting project is portable)
+                    string rid = GetNonVersionSpecificRID();
+                    string path = string.Join(Path.DirectorySeparatorChar, "runtimes", rid, "native", nativeLibraryName);
+                    try
+                    {
+                        NativeLibrary.Load(path);
+                    }
+                    catch (DllNotFoundException ex)
+                    {
+                        throw new PlatformNotSupportedException($"Native support not found for platform \"{rid}\".", ex);
+                    }
+                }
+                loadedNativeLibrary = true;
+            }
             _iconPath = iconPath;
             _menuItems = menuItems;
             AllocateNewTray(false);

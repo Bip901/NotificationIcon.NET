@@ -13,26 +13,26 @@ namespace NotificationIcon.NET
 {
     internal partial class LinuxNotifyIcon : NotifyIcon
     {
-        private const string LIBRARY_PATH = "runtimes/linux-x64/native/libnotification_icon.so.1.1.0";
+        private const string SO_NAME = "libnotification_icon.so";
 
         /// <exception cref="InvalidOperationException"></exception>
-        public LinuxNotifyIcon(string iconPath, IReadOnlyList<MenuItem> menuItems) : base(iconPath, menuItems)
+        public LinuxNotifyIcon(string iconPath, IReadOnlyList<MenuItem> menuItems) : base(SO_NAME, iconPath, menuItems)
         { }
 
         #region Native
-        [LibraryImport(LIBRARY_PATH)]
+        [LibraryImport(SO_NAME)]
         [UnmanagedCallConv(CallConvs = new[] { typeof(CallConvCdecl) })]
         private static partial int tray_init(IntPtr tray);
 
-        [LibraryImport(LIBRARY_PATH)]
+        [LibraryImport(SO_NAME)]
         [UnmanagedCallConv(CallConvs = new[] { typeof(CallConvCdecl) })]
         private static partial void tray_exit(IntPtr tray);
 
-        [LibraryImport(LIBRARY_PATH)]
+        [LibraryImport(SO_NAME)]
         [UnmanagedCallConv(CallConvs = new[] { typeof(CallConvCdecl) })]
         private static partial int tray_loop(int blocking);
 
-        [LibraryImport(LIBRARY_PATH)]
+        [LibraryImport(SO_NAME)]
         [UnmanagedCallConv(CallConvs = new[] { typeof(CallConvCdecl) })]
         private static partial void tray_update(IntPtr tray);
 

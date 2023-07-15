@@ -13,34 +13,34 @@ namespace NotificationIcon.NET
 {
     internal partial class WindowsNotifyIcon : NotifyIcon
     {
-        private const string DLL_PATH = "runtimes/win-x64/native/notification_icon.dll";
+        private const string DLL_NAME = "notification_icon.dll";
 
         /// <exception cref="InvalidOperationException"></exception>
-        public WindowsNotifyIcon(string iconPath, IReadOnlyList<MenuItem> menuItems) : base(iconPath, menuItems)
+        public WindowsNotifyIcon(string iconPath, IReadOnlyList<MenuItem> menuItems) : base(DLL_NAME, iconPath, menuItems)
         { }
 
         #region Native
-        [LibraryImport(DLL_PATH)]
+        [LibraryImport(DLL_NAME)]
         [UnmanagedCallConv(CallConvs = new[] { typeof(CallConvCdecl) })]
         private static partial int tray_init(IntPtr tray);
 
-        [LibraryImport(DLL_PATH)]
+        [LibraryImport(DLL_NAME)]
         [UnmanagedCallConv(CallConvs = new[] { typeof(CallConvCdecl) })]
         private static partial void tray_exit(IntPtr tray);
 
-        [LibraryImport(DLL_PATH)]
+        [LibraryImport(DLL_NAME)]
         [UnmanagedCallConv(CallConvs = new[] { typeof(CallConvCdecl) })]
         private static partial void tray_exit_from_another_thread(uint threadId);
 
-        [LibraryImport(DLL_PATH)]
+        [LibraryImport(DLL_NAME)]
         [UnmanagedCallConv(CallConvs = new[] { typeof(CallConvCdecl) })]
         private static partial uint get_current_thread_id();
 
-        [LibraryImport(DLL_PATH)]
+        [LibraryImport(DLL_NAME)]
         [UnmanagedCallConv(CallConvs = new[] { typeof(CallConvCdecl) })]
         private static partial int tray_loop(int blocking);
 
-        [LibraryImport(DLL_PATH)]
+        [LibraryImport(DLL_NAME)]
         [UnmanagedCallConv(CallConvs = new[] { typeof(CallConvCdecl) })]
         private static partial void tray_update(IntPtr tray);
 
