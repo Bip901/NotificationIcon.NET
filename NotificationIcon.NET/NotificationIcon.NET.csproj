@@ -37,13 +37,13 @@
 		<DefineConstants>$(DefineConstants);PORTABLE</DefineConstants>
 	</PropertyGroup>
 	<ItemGroup Condition="$(Configuration.Contains(Linux)) Or $(Configuration.Contains(Portable))">
-		<Content Include="prebuilt\linux-*\native\*">
+		<Content Include="runtimes\linux-*\native\*">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 			<PackagePath>runtimes/</PackagePath>
 		</Content>
 	</ItemGroup>
 	<ItemGroup Condition="$(Configuration.Contains(Windows)) Or $(Configuration.Contains(Portable))">
-		<Content Include="prebuilt\win-*\native\*">
+		<Content Include="runtimes\win-*\native\*">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 			<PackagePath>runtimes/</PackagePath>
 		</Content>
