@@ -7,7 +7,7 @@
 		<Nullable>enable</Nullable>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 		<Configurations>Debug-Portable;Release-Windows;Release-Linux;Release-Portable</Configurations>
-		<Version>1.1.0</Version>
+		<Version>1.2.0</Version>
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 		<Authors>Bip901</Authors>
 		<Copyright>Ori Almagor</Copyright>
