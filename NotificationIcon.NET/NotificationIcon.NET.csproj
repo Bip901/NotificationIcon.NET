@@ -16,6 +16,8 @@
 		<RepositoryUrl>https://github.com/Bip901/NotificationIcon.NET</RepositoryUrl>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<RuntimeIdentifiers>win-x64;linux-x64;</RuntimeIdentifiers>
+		<GenerateDocumentationFile>true</GenerateDocumentationFile>
+		<DocumentationFile>$(MSBuildProjectDirectory)/bin/$(Configuration)/net7.0/NotificationIcon.NET.xml</DocumentationFile>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="$(Configuration.Contains(Debug))">
