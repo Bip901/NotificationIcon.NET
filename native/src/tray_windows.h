@@ -60,17 +60,20 @@ static LRESULT CALLBACK _tray_wnd_proc(HWND hwnd, UINT msg, WPARAM wparam, LPARA
 		}
 		break;
 	case WM_COMMAND:
-		if (wparam >= ID_TRAY_FIRST) {
-			MENUITEMINFO item = {
-				.cbSize = sizeof(MENUITEMINFO), .fMask = MIIM_ID | MIIM_DATA,
-			};
-			if (GetMenuItemInfo(hmenu, wparam, FALSE, &item)) {
-				struct tray_menu* menu = (struct tray_menu*)item.dwItemData;
-				if (menu != NULL && menu->cb != NULL) {
-					menu->cb(menu);
+		{
+			UINT menuItemId = (UINT)wparam;
+			if (menuItemId >= ID_TRAY_FIRST) {
+				MENUITEMINFO item = {
+					.cbSize = sizeof(MENUITEMINFO), .fMask = MIIM_ID | MIIM_DATA,
+				};
+				if (GetMenuItemInfo(hmenu, menuItemId, FALSE, &item)) {
+					struct tray_menu* menu = (struct tray_menu*)item.dwItemData;
+					if (menu != NULL && menu->cb != NULL) {
+						menu->cb(menu);
+					}
 				}
+				return 0;
 			}
-			return 0;
 		}
 		break;
 	}
@@ -172,7 +175,7 @@ EXPORT int tray_loop(int blocking) {
 	return 0;
 }
 
-EXPORT void get_current_thread_id() {
+EXPORT DWORD get_current_thread_id() {
 	return GetCurrentThreadId();
 }
 
@@ -188,7 +191,7 @@ EXPORT void tray_exit_from_another_thread(DWORD ownerThreadId) {
 		PostQuitMessage(0);
 	}
 	else {
-		PostThreadMessage(ownerThreadId, WM_QUIT, 0, NULL);
+		PostThreadMessage(ownerThreadId, WM_QUIT, 0, 0);
 	}
 	UnregisterClass(WC_TRAY_CLASS_NAME, GetModuleHandle(NULL));
 }
