@@ -52,10 +52,14 @@ static LRESULT CALLBACK _tray_wnd_proc(HWND hwnd, UINT msg, WPARAM wparam, LPARA
 			POINT p;
 			GetCursorPos(&p);
 			SetForegroundWindow(hwnd);
-			WORD cmd = TrackPopupMenu(hmenu, TPM_LEFTALIGN | TPM_RIGHTBUTTON |
-				TPM_RETURNCMD | TPM_NONOTIFY,
-				p.x, p.y, 0, hwnd, NULL);
-			SendMessage(hwnd, WM_COMMAND, cmd, 0);
+			WORD cmd = TrackPopupMenu(
+				hmenu,
+				TPM_LEFTALIGN | TPM_RIGHTBUTTON | TPM_RETURNCMD | TPM_NONOTIFY,
+				p.x, p.y, 0, hwnd, NULL
+			);
+			if (cmd != 0) {
+				SendMessage(hwnd, WM_COMMAND, cmd, 0);
+			}
 			return 0;
 		}
 		break;
@@ -162,7 +166,10 @@ EXPORT int tray_init(struct tray* tray) {
 EXPORT int tray_loop(int blocking) {
 	MSG msg;
 	if (blocking) {
-		GetMessage(&msg, NULL, 0, 0);
+		if (GetMessage(&msg, NULL, 0, 0) == -1)
+		{
+			return 7; //Stop loop on GetMessage error
+		}
 	}
 	else {
 		PeekMessage(&msg, NULL, 0, 0, PM_REMOVE);
