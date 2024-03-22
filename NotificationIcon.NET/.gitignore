@@ -1,4 +1,2 @@
-bin/
-obj/
-.vscode/
-.vs/
+# Auto-generated on build
+README.md

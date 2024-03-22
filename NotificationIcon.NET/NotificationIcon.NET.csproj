@@ -63,6 +63,10 @@
 		<DefineConstants>$(DefineConstants);WINDOWS</DefineConstants>
 	</PropertyGroup>
 
+	<Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+	  <Copy SourceFiles="../README.md" DestinationFiles="README.md" UseHardlinksIfPossible="true"/>
+	</Target>
+
 	<ItemGroup>
 	  <None Update="README.md">
 	    <Pack>True</Pack>

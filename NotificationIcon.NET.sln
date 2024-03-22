@@ -1,0 +1,41 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.33502.453
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NotificationIcon.NET", "NotificationIcon.NET\NotificationIcon.NET.csproj", "{07D6E1BB-10A3-4D47-B8D3-D3C9C67E5088}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test", "Test\Test.csproj", "{EBEB9CEE-B8C6-4E5C-AEDE-AF5C781C8708}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release-Linux|Any CPU = Release-Linux|Any CPU
+		Release-Portable|Any CPU = Release-Portable|Any CPU
+		Release-Windows|Any CPU = Release-Windows|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{07D6E1BB-10A3-4D47-B8D3-D3C9C67E5088}.Debug|Any CPU.ActiveCfg = Debug-Portable|Any CPU
+		{07D6E1BB-10A3-4D47-B8D3-D3C9C67E5088}.Debug|Any CPU.Build.0 = Debug-Portable|Any CPU
+		{07D6E1BB-10A3-4D47-B8D3-D3C9C67E5088}.Release-Linux|Any CPU.ActiveCfg = Release-Linux|Any CPU
+		{07D6E1BB-10A3-4D47-B8D3-D3C9C67E5088}.Release-Linux|Any CPU.Build.0 = Release-Linux|Any CPU
+		{07D6E1BB-10A3-4D47-B8D3-D3C9C67E5088}.Release-Portable|Any CPU.ActiveCfg = Release-Portable|Any CPU
+		{07D6E1BB-10A3-4D47-B8D3-D3C9C67E5088}.Release-Portable|Any CPU.Build.0 = Release-Portable|Any CPU
+		{07D6E1BB-10A3-4D47-B8D3-D3C9C67E5088}.Release-Windows|Any CPU.ActiveCfg = Release-Windows|Any CPU
+		{07D6E1BB-10A3-4D47-B8D3-D3C9C67E5088}.Release-Windows|Any CPU.Build.0 = Release-Windows|Any CPU
+		{EBEB9CEE-B8C6-4E5C-AEDE-AF5C781C8708}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EBEB9CEE-B8C6-4E5C-AEDE-AF5C781C8708}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EBEB9CEE-B8C6-4E5C-AEDE-AF5C781C8708}.Release-Linux|Any CPU.ActiveCfg = Release|Any CPU
+		{EBEB9CEE-B8C6-4E5C-AEDE-AF5C781C8708}.Release-Linux|Any CPU.Build.0 = Release|Any CPU
+		{EBEB9CEE-B8C6-4E5C-AEDE-AF5C781C8708}.Release-Portable|Any CPU.ActiveCfg = Release|Any CPU
+		{EBEB9CEE-B8C6-4E5C-AEDE-AF5C781C8708}.Release-Portable|Any CPU.Build.0 = Release|Any CPU
+		{EBEB9CEE-B8C6-4E5C-AEDE-AF5C781C8708}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
+		{EBEB9CEE-B8C6-4E5C-AEDE-AF5C781C8708}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {C71346A4-236A-40C6-8506-6441D4690CA8}
+	EndGlobalSection
+EndGlobal
