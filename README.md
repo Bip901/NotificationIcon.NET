@@ -48,4 +48,4 @@ icon.Show(); //Use icon.Dispose() to hide
 
 * To build the C# project: `dotnet build --configuration Release-Portable`
 * The native libraries are already compiled in `prebuilt/`.
-  * To build them yourself, see [native/README.md](native/README.md).
+  * To build them yourself, see [native/README.md](NotificationIcon.NET/native/README.md).

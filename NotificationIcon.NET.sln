@@ -5,7 +5,12 @@ VisualStudioVersion = 17.5.33502.453
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NotificationIcon.NET", "NotificationIcon.NET\NotificationIcon.NET.csproj", "{07D6E1BB-10A3-4D47-B8D3-D3C9C67E5088}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test", "Test\Test.csproj", "{EBEB9CEE-B8C6-4E5C-AEDE-AF5C781C8708}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Test", "Test\Test.csproj", "{EBEB9CEE-B8C6-4E5C-AEDE-AF5C781C8708}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{AE87A896-547B-47CB-8D67-9F7552B682AF}"
+	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
