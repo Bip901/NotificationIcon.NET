@@ -50,8 +50,13 @@ static LRESULT CALLBACK _tray_wnd_proc(HWND hwnd, UINT msg, WPARAM wparam, LPARA
 	case WM_TRAY_CALLBACK_MESSAGE:
 		if (lparam == WM_LBUTTONUP || lparam == WM_RBUTTONUP) {
 			POINT p;
-			GetCursorPos(&p);
+			if (!GetCursorPos(&p)) {
+				break;
+			}
 			SetForegroundWindow(hwnd);
+			if (hmenu == NULL) {
+				break;
+			}
 			WORD cmd = TrackPopupMenu(
 				hmenu,
 				TPM_LEFTALIGN | TPM_RIGHTBUTTON | TPM_RETURNCMD | TPM_NONOTIFY,
@@ -191,7 +196,7 @@ EXPORT void tray_exit_from_another_thread(DWORD ownerThreadId) {
 	if (nid.hIcon != 0) {
 		DestroyIcon(nid.hIcon);
 	}
-	if (hmenu != 0) {
+	if (hmenu != NULL) {
 		DestroyMenu(hmenu);
 	}
 	if (ownerThreadId == 0) { //Use current thread
