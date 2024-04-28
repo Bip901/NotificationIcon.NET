@@ -75,6 +75,9 @@ static LRESULT CALLBACK _tray_wnd_proc(HWND hwnd, UINT msg, WPARAM wparam, LPARA
 				MENUITEMINFO item = {
 					.cbSize = sizeof(MENUITEMINFO), .fMask = MIIM_ID | MIIM_DATA,
 				};
+				if (hmenu == NULL) {
+					break;
+				}
 				if (GetMenuItemInfo(hmenu, menuItemId, FALSE, &item)) {
 					struct tray_menu* menu = (struct tray_menu*)item.dwItemData;
 					if (menu != NULL && menu->cb != NULL) {
@@ -198,6 +201,7 @@ EXPORT void tray_exit_from_another_thread(DWORD ownerThreadId) {
 	}
 	if (hmenu != NULL) {
 		DestroyMenu(hmenu);
+		hmenu = NULL;
 	}
 	if (ownerThreadId == 0) { //Use current thread
 		PostQuitMessage(0);
