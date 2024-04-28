@@ -113,7 +113,7 @@ static HMENU _tray_menu(struct tray_menu* m, UINT* id) {
 				item.fState |= MFS_CHECKED;
 			}
 			item.wID = *id;
-			item.dwTypeData = m->text;
+			item.dwTypeData = (LPWSTR)m->text;
 			item.dwItemData = (ULONG_PTR)m;
 
 			InsertMenuItem(hmenu, *id, TRUE, &item);
@@ -128,7 +128,7 @@ EXPORT void tray_update(struct tray* tray) {
 	hmenu = _tray_menu(tray->menu, &id);
 	SendMessage(hwnd, WM_INITMENUPOPUP, (WPARAM)hmenu, 0);
 	HICON icon;
-	ExtractIconEx(tray->icon, 0, NULL, &icon, 1);
+	ExtractIconEx((LPCWSTR)tray->icon, 0, NULL, &icon, 1);
 	if (nid.hIcon) {
 		DestroyIcon(nid.hIcon);
 	}
