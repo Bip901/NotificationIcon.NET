@@ -171,13 +171,13 @@ EXPORT int tray_init(struct tray* tray) {
 EXPORT int tray_loop(int blocking) {
 	MSG msg;
 	if (blocking) {
-		if (GetMessage(&msg, NULL, 0, 0) == -1)
+		if (GetMessage(&msg, hwnd, 0, 0) == -1)
 		{
 			return 7; //Stop loop on GetMessage error
 		}
 	}
 	else {
-		PeekMessage(&msg, NULL, 0, 0, PM_REMOVE);
+		PeekMessage(&msg, hwnd, 0, 0, PM_REMOVE);
 	}
 	if (msg.message == WM_QUIT) {
 		return -1;
