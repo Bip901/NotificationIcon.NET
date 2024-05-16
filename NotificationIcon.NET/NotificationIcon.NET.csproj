@@ -7,17 +7,20 @@
 		<Nullable>enable</Nullable>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 		<Configurations>Debug-Portable;Release-Windows;Release-Linux;Release-Portable</Configurations>
-		<Version>1.2.3</Version>
+		<Version>1.2.4</Version>
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 		<Authors>Bip901</Authors>
 		<Copyright>Ori Almagor</Copyright>
 		<Description>A cross-platform C# library to display a notification icon in the taskbar notification area ("tray").</Description>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<RepositoryUrl>https://github.com/Bip901/NotificationIcon.NET</RepositoryUrl>
+		<PackageProjectUrl>https://github.com/Bip901/NotificationIcon.NET</PackageProjectUrl>
+		<RepositoryType>Git</RepositoryType>
+		<PackageTags>notification-icon multi-platform libappindicator tray gui</PackageTags>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<RuntimeIdentifiers>win-x64;linux-x64;</RuntimeIdentifiers>
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>
-		<DocumentationFile>$(MSBuildProjectDirectory)/bin/$(Configuration)/net7.0/NotificationIcon.NET.xml</DocumentationFile>
+		<DocumentationFile>$(MSBuildProjectDirectory)/bin/$(Configuration)/$(TargetFramework)/NotificationIcon.NET.xml</DocumentationFile>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="$(Configuration.Contains(Debug))">
