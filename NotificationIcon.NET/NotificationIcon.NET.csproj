@@ -31,16 +31,6 @@
 		<DefineConstants>RELEASE</DefineConstants>
 	</PropertyGroup>
 
-	<ItemGroup>
-	  <Compile Remove="screenshots\**" />
-	  <EmbeddedResource Remove="screenshots\**" />
-	  <None Remove="screenshots\**" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<Folder Include="native\src\" />
-	</ItemGroup>
-
 	<!--When compiling as Portable (includes all platforms together)-->
 	<PropertyGroup Condition="$(Configuration.Contains(Portable))">
 		<TargetFramework>net7.0</TargetFramework>
