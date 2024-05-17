@@ -132,7 +132,7 @@ namespace NotificationIcon.NET
             int tray_init_result = TrayInit(trayHandle.Ptr);
             if (tray_init_result < 0)
             {
-                throw new InvalidOperationException("Failed to initialize tray.");
+                throw new InvalidOperationException($"Failed to initialize tray. ({tray_init_result})");
             }
             SubscribeToUpdates(menuItems);
         }

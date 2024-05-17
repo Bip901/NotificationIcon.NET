@@ -143,19 +143,21 @@ EXPORT void tray_update(struct tray* tray) {
 	}
 }
 
-EXPORT int tray_init(struct tray* tray) {
+EXPORT INT32 tray_init(struct tray* tray) {
 	memset(&wc, 0, sizeof(wc));
 	wc.cbSize = sizeof(WNDCLASSEX);
 	wc.lpfnWndProc = _tray_wnd_proc;
 	wc.hInstance = GetModuleHandle(NULL);
 	wc.lpszClassName = WC_TRAY_CLASS_NAME;
 	if (!RegisterClassEx(&wc)) {
-		return -1;
+		INT32 errorCode = -(INT32)GetLastError();
+		return errorCode == 0 ? -1 : errorCode;
 	}
 
 	hwnd = CreateWindowEx(0, WC_TRAY_CLASS_NAME, NULL, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 	if (hwnd == NULL) {
-		return -1;
+		INT32 errorCode = -(INT32)GetLastError();
+		return errorCode == 0 ? -1 : errorCode;
 	}
 	UpdateWindow(hwnd);
 
