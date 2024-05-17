@@ -66,23 +66,15 @@ namespace NotificationIcon.NET
         /// Creates a new <see cref="NotifyIcon"/>.
         /// </summary>
         /// <param name="iconPath">A path to an icon on the file system. For Windows, this should be an ICO file. For Unix, this should be a PNG.</param>
+        /// <param name="menuItems">The menu items to display to the user when clicking the icon.</param>
         /// <exception cref="PlatformNotSupportedException"></exception>
         /// <exception cref="InvalidOperationException"></exception>
         public static NotifyIcon Create(string iconPath, IReadOnlyList<MenuItem> menuItems)
         {
-#if PORTABLE
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-#endif
-#if PORTABLE || WINDOWS
                 return new WindowsNotifyIcon(iconPath, menuItems);
-#endif
-
-#if PORTABLE
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-#endif
-#if PORTABLE || LINUX
                 return new LinuxNotifyIcon(iconPath, menuItems);
-#endif
             throw new PlatformNotSupportedException();
         }
 
@@ -121,21 +113,16 @@ namespace NotificationIcon.NET
         {
             if (!loadedNativeLibrary)
             {
-                //Attempt loading from the base directory ('.') first (if the hosting project was compiled with a RID)
                 string baseDirectory = AppContext.BaseDirectory;
-                if (!NativeLibrary.TryLoad(Path.Join(baseDirectory, nativeLibraryName), out _))
+                string rid = GetNonVersionSpecificRID();
+                string path = Path.Join(baseDirectory, "runtimes", rid, "native", nativeLibraryName);
+                try
                 {
-                    //Fallback to runtimes/{RID}/native (if the hosting project is portable)
-                    string rid = GetNonVersionSpecificRID();
-                    string path = Path.Join(baseDirectory, "runtimes", rid, "native", nativeLibraryName);
-                    try
-                    {
-                        NativeLibrary.Load(path);
-                    }
-                    catch (DllNotFoundException ex)
-                    {
-                        throw new PlatformNotSupportedException($"Native support not found for platform \"{rid}\".", ex);
-                    }
+                    NativeLibrary.Load(path);
+                }
+                catch (DllNotFoundException ex)
+                {
+                    throw new PlatformNotSupportedException($"Native support not found for platform \"{rid}\".", ex);
                 }
                 loadedNativeLibrary = true;
             }

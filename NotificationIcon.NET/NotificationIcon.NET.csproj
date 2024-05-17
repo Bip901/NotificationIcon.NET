@@ -6,7 +6,7 @@
 		<ImplicitUsings>disable</ImplicitUsings>
 		<Nullable>enable</Nullable>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-		<Configurations>Debug-Portable;Release-Windows;Release-Linux;Release-Portable</Configurations>
+		<Configurations>Debug;Release</Configurations>
 		<Version>1.2.5</Version>
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 		<Authors>Bip901</Authors>
@@ -31,36 +31,13 @@
 		<DefineConstants>RELEASE</DefineConstants>
 	</PropertyGroup>
 
-	<!--When compiling as Portable (includes all platforms together)-->
-	<PropertyGroup Condition="$(Configuration.Contains(Portable))">
-		<TargetFramework>net7.0</TargetFramework>
-		<DefineConstants>$(DefineConstants);PORTABLE</DefineConstants>
-	</PropertyGroup>
-	<ItemGroup Condition="$(Configuration.Contains(Linux)) Or $(Configuration.Contains(Portable))">
-		<Content Include="runtimes\linux-*\native\*">
+	<ItemGroup>
+		<Content Include="runtimes\*\native\*">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 			<PackagePath>runtimes/</PackagePath>
 		</Content>
 	</ItemGroup>
-	<ItemGroup Condition="$(Configuration.Contains(Windows)) Or $(Configuration.Contains(Portable))">
-		<Content Include="runtimes\win-*\native\*">
-			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-			<PackagePath>runtimes/</PackagePath>
-		</Content>
-	</ItemGroup>
-
-	<!--When compiling as Linux-only-->
-	<PropertyGroup Condition="$(Configuration.Contains(Linux))">
-		<TargetFramework>net7.0-linux</TargetFramework>
-		<DefineConstants>$(DefineConstants);LINUX</DefineConstants>
-	</PropertyGroup>
 	
-	<!--When compiling as Windows-only-->
-	<PropertyGroup Condition="$(Configuration.Contains(Windows))">
-		<TargetFramework>net7.0-windows</TargetFramework>
-		<DefineConstants>$(DefineConstants);WINDOWS</DefineConstants>
-	</PropertyGroup>
-
 	<Target Name="PreBuild" BeforeTargets="PreBuildEvent">
 	  <Copy SourceFiles="../README.md" DestinationFiles="README.md" UseHardlinksIfPossible="true" />
 	</Target>
