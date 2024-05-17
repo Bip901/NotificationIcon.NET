@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Threading;
 
 namespace NotificationIcon.NET
 {
@@ -113,15 +112,6 @@ namespace NotificationIcon.NET
                 menus = menuItemsPtr
             };
             return HeapAlloc<Tray>.Copy(tray);
-        }
-
-        public override void Show(CancellationToken cancellationToken = default)
-        {
-            using (cancellationToken.Register(Dispose))
-            {
-                while (MessageLoopIteration(true) == 0)
-                { }
-            }
         }
     }
 }

@@ -208,7 +208,16 @@ namespace NotificationIcon.NET
         /// </summary>
         /// <remarks>Call this on the thread that owns the NotifyIcon.</remarks>
         /// <param name="cancellationToken">A cancellation token that, when fired, disposes this object and stops the loop.</param>
-        public abstract void Show(CancellationToken cancellationToken = default);
+        /// <exception cref="ObjectDisposedException"/>
+        public virtual void Show(CancellationToken cancellationToken = default)
+        {
+            ObjectDisposedException.ThrowIf(disposed, this);
+            using (cancellationToken.Register(Dispose))
+            {
+                while (MessageLoopIteration(true) == 0)
+                { }
+            }
+        }
 
         /// <summary>
         /// Stops showing this notification icon and releases all resources associated with it.
