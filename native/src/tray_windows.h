@@ -185,6 +185,7 @@ EXPORT int tray_loop(int blocking) {
 		PeekMessage(&msg, NULL, 0, 0, PM_REMOVE);
 	}
 	if (msg.message == WM_QUIT) {
+		UnregisterClass(WC_TRAY_CLASS_NAME, GetModuleHandle(NULL));
 		return -1;
 	}
 	TranslateMessage(&msg);
@@ -192,11 +193,7 @@ EXPORT int tray_loop(int blocking) {
 	return 0;
 }
 
-EXPORT DWORD get_current_thread_id() {
-	return GetCurrentThreadId();
-}
-
-EXPORT void tray_exit_from_another_thread(DWORD ownerThreadId) {
+EXPORT void tray_exit() {
 	Shell_NotifyIcon(NIM_DELETE, &nid);
 	if (nid.hIcon != 0) {
 		DestroyIcon(nid.hIcon);
@@ -205,15 +202,6 @@ EXPORT void tray_exit_from_another_thread(DWORD ownerThreadId) {
 		DestroyMenu(hmenu);
 		hmenu = NULL;
 	}
-	if (ownerThreadId == 0) { //Use current thread
-		PostQuitMessage(0);
-	}
-	else {
-		PostThreadMessage(ownerThreadId, WM_QUIT, 0, 0);
-	}
-	UnregisterClass(WC_TRAY_CLASS_NAME, GetModuleHandle(NULL));
+	PostMessage(hwnd, WM_CLOSE, 0, 0);
 }
-
-EXPORT void tray_exit() {
-	tray_exit_from_another_thread(0);
-}
+ 

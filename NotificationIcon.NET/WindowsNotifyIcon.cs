@@ -25,14 +25,6 @@ namespace NotificationIcon.NET
 
         [LibraryImport(DLL_NAME)]
         [UnmanagedCallConv(CallConvs = new[] { typeof(CallConvCdecl) })]
-        private static partial void tray_exit_from_another_thread(uint threadId);
-
-        [LibraryImport(DLL_NAME)]
-        [UnmanagedCallConv(CallConvs = new[] { typeof(CallConvCdecl) })]
-        private static partial uint get_current_thread_id();
-
-        [LibraryImport(DLL_NAME)]
-        [UnmanagedCallConv(CallConvs = new[] { typeof(CallConvCdecl) })]
         private static partial int tray_loop(int blocking);
 
         [LibraryImport(DLL_NAME)]
@@ -125,14 +117,9 @@ namespace NotificationIcon.NET
 
         public override void Show(CancellationToken cancellationToken = default)
         {
-            uint threadId = get_current_thread_id();
-            using (cancellationToken.Register(() =>
+            using (cancellationToken.Register(Dispose))
             {
-                tray_exit_from_another_thread(threadId);
-                DisposeWithoutExiting();
-            }))
-            {
-                while (!cancellationToken.IsCancellationRequested && MessageLoopIteration(true) == 0)
+                while (MessageLoopIteration(true) == 0)
                 { }
             }
         }

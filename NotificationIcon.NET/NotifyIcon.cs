@@ -210,24 +210,19 @@ namespace NotificationIcon.NET
         /// <param name="cancellationToken">A cancellation token that, when fired, disposes this object and stops the loop.</param>
         public abstract void Show(CancellationToken cancellationToken = default);
 
-        protected void DisposeWithoutExiting()
-        {
-            if (!disposed)
-            {
-                trayHandle.Dispose();
-                menuItemsHandle.Dispose();
-                disposed = true;
-            }
-        }
-
+        /// <summary>
+        /// Stops showing this notification icon and releases all resources associated with it.
+        /// </summary>
         public virtual void Dispose()
         {
             GC.SuppressFinalize(this);
             if (!disposed)
             {
                 TrayExit(trayHandle.Ptr);
+                trayHandle.Dispose();
+                menuItemsHandle.Dispose();
+                disposed = true;
             }
-            DisposeWithoutExiting();
         }
     }
 }
