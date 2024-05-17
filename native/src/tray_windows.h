@@ -38,6 +38,7 @@ static WNDCLASSEX wc;
 static NOTIFYICONDATA nid;
 static HWND hwnd;
 static HMENU hmenu = NULL;
+static LONG isTrayLoopRunning = 0;
 
 static LRESULT CALLBACK _tray_wnd_proc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
 	switch (msg) {
@@ -174,23 +175,30 @@ EXPORT INT32 tray_init(struct tray* tray) {
 }
 
 EXPORT int tray_loop(int blocking) {
+	InterlockedExchange(&isTrayLoopRunning, 1);
+	int return_code = 0;
 	MSG msg;
 	if (blocking) {
 		if (GetMessage(&msg, NULL, 0, 0) == -1)
 		{
-			return 7; //Stop loop on GetMessage error
+			return_code = 7;
+			goto END; //Stop loop on GetMessage error
 		}
 	}
-	else {
-		PeekMessage(&msg, NULL, 0, 0, PM_REMOVE);
+	else if (!PeekMessage(&msg, NULL, 0, 0, PM_REMOVE)) {
+		return_code = -1;
+		goto END;
 	}
 	if (msg.message == WM_QUIT) {
 		UnregisterClass(WC_TRAY_CLASS_NAME, GetModuleHandle(NULL));
-		return -1;
+		return_code = -1;
+		goto END;
 	}
 	TranslateMessage(&msg);
 	DispatchMessage(&msg);
-	return 0;
+END:
+	InterlockedExchange(&isTrayLoopRunning, 0);
+	return return_code;
 }
 
 EXPORT void tray_exit() {
@@ -202,6 +210,12 @@ EXPORT void tray_exit() {
 		DestroyMenu(hmenu);
 		hmenu = NULL;
 	}
+	ULONG isTrayLoopRunningLocal = isTrayLoopRunning;
 	PostMessage(hwnd, WM_CLOSE, 0, 0);
+	if (!isTrayLoopRunningLocal)
+	{
+		while (tray_loop(1) == 0)
+		{ }
+	}
 }
  
