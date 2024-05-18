@@ -115,7 +115,14 @@ namespace NotificationIcon.NET
             {
                 string baseDirectory = AppContext.BaseDirectory;
                 string rid = GetNonVersionSpecificRID();
-                string path = Path.Join(baseDirectory, "runtimes", rid, "native", nativeLibraryName);
+                //If the project using this library is built for a specific RID (e.g. when publishing with NativeAOT),
+                //the native library is directly next to the executable.
+                string path = Path.Join(baseDirectory, nativeLibraryName);
+                if (!File.Exists(path))
+                {
+                    // e.g. ./runtimes/win-x64/native/notification_icon.dll
+                    path = Path.Join(baseDirectory, "runtimes", rid, "native", nativeLibraryName);
+                }
                 try
                 {
                     NativeLibrary.Load(path);
