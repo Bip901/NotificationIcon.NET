@@ -81,15 +81,15 @@ public struct HeapAlloc<T> : IHeapAlloc where T : struct
     {
         if (disposed)
             return;
-        disposed = true;
         int elementSize = GetElementSize();
-        IntPtr current = Ptr;
+        IntPtr current = ptr;
         for (int i = 0; i < arraySize; i++)
         {
             Marshal.DestroyStructure<T>(current);
             current += elementSize;
         }
-        Marshal.FreeHGlobal(Ptr);
+        Marshal.FreeHGlobal(ptr);
+        disposed = true;
         if (dependencies != null)
         {
             foreach (IDisposable dependency in dependencies)
