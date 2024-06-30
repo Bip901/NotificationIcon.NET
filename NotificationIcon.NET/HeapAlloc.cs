@@ -1,79 +1,100 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace NotificationIcon.NET
+namespace NotificationIcon.NET;
+
+/// <summary>
+/// Represents a non-garbage collected, global heap allocation.
+/// </summary>
+/// <typeparam name="T">The struct contained in this allocation.</typeparam>
+public struct HeapAlloc<T> : IHeapAlloc where T : struct
 {
-    public struct HeapAlloc<T> : IHeapAlloc where T : struct
+    /// <summary>
+    /// A pointer to the beginning of the allocation.
+    /// </summary>
+    /// <exception cref="ObjectDisposedException"/>
+    public readonly IntPtr Ptr
     {
-        public IntPtr Ptr { get; }
-
-        private readonly int arraySize;
-        private readonly IEnumerable<IDisposable>? dependencies;
-
-        private HeapAlloc(nint ptr, int arraySize, IEnumerable<IDisposable>? dependencies = null)
+        get
         {
-            Ptr = ptr;
-            this.arraySize = arraySize;
-            this.dependencies = dependencies;
+            ObjectDisposedException.ThrowIf(disposed, this);
+            return ptr;
         }
+    }
 
-        private static int GetElementSize()
+    private readonly IntPtr ptr;
+    private readonly int arraySize;
+    private readonly IEnumerable<IDisposable>? dependencies;
+    private bool disposed;
+
+    private HeapAlloc(nint ptr, int arraySize, IEnumerable<IDisposable>? dependencies = null)
+    {
+        this.ptr = ptr;
+        this.arraySize = arraySize;
+        this.dependencies = dependencies;
+    }
+
+    private static int GetElementSize()
+    {
+        unsafe
         {
-            unsafe
-            {
-                return sizeof(T);
-            }
+#pragma warning disable CS8500 // This takes the address of, gets the size of, or declares a pointer to a managed type
+            return sizeof(T);
+#pragma warning restore CS8500 // This takes the address of, gets the size of, or declares a pointer to a managed type
         }
+    }
 
-        /// <summary>
-        /// Creates a copy of the given struct on the heap.
-        /// </summary>
-        /// <returns>A safe pointer to the unmanaged memory.</returns>
-        public static HeapAlloc<T> Copy(T @struct, IEnumerable<IDisposable>? dependencies = null)
+    /// <summary>
+    /// Creates a copy of the given struct on the heap.
+    /// </summary>
+    /// <returns>A safe pointer to the unmanaged memory.</returns>
+    public static HeapAlloc<T> Copy(T @struct, IEnumerable<IDisposable>? dependencies = null)
+    {
+        int elementSize = GetElementSize();
+        IntPtr result = Marshal.AllocHGlobal(elementSize);
+        Marshal.StructureToPtr(@struct, result, false);
+        return new HeapAlloc<T>(result, 1, dependencies);
+    }
+
+    /// <summary>
+    /// Creates a copy of the given struct array on the heap.
+    /// </summary>
+    /// <returns>A safe pointer to the unmanaged memory.</returns>
+    public static HeapAlloc<T> Copy(T[] structs, IEnumerable<IDisposable>? dependencies = null)
+    {
+        int elementSize = GetElementSize();
+        IntPtr result = Marshal.AllocHGlobal(elementSize * structs.Length);
+        IntPtr current = result;
+        for (int i = 0; i < structs.Length; i++)
         {
-            int elementSize = GetElementSize();
-            IntPtr result = Marshal.AllocHGlobal(elementSize);
-            Marshal.StructureToPtr(@struct, result, false);
-            return new HeapAlloc<T>(result, 1, dependencies);
+            Marshal.StructureToPtr(structs[i], current, false);
+            current += elementSize;
         }
+        return new HeapAlloc<T>(result, structs.Length, dependencies);
+    }
 
-        /// <summary>
-        /// Creates a copy of the given struct array on the heap.
-        /// </summary>
-        /// <returns>A safe pointer to the unmanaged memory.</returns>
-        public static HeapAlloc<T> Copy(T[] structs, IEnumerable<IDisposable>? dependencies = null)
+    /// <summary>
+    /// Frees this allocation.
+    /// </summary>
+    public void Dispose()
+    {
+        if (disposed)
+            return;
+        disposed = true;
+        int elementSize = GetElementSize();
+        IntPtr current = Ptr;
+        for (int i = 0; i < arraySize; i++)
         {
-            int elementSize = GetElementSize();
-            IntPtr result = Marshal.AllocHGlobal(elementSize * structs.Length);
-            IntPtr current = result;
-            for (int i = 0; i < structs.Length; i++)
-            {
-                Marshal.StructureToPtr(structs[i], current, false);
-                current += elementSize;
-            }
-            return new HeapAlloc<T>(result, structs.Length, dependencies);
+            Marshal.DestroyStructure<T>(current);
+            current += elementSize;
         }
-
-        public void Dispose()
+        Marshal.FreeHGlobal(Ptr);
+        if (dependencies != null)
         {
-            int elementSize = GetElementSize();
-            IntPtr current = Ptr;
-            for (int i = 0; i < arraySize; i++)
+            foreach (IDisposable dependency in dependencies)
             {
-                Marshal.DestroyStructure<T>(current);
-                current += elementSize;
-            }
-            Marshal.FreeHGlobal(Ptr);
-            if (dependencies != null)
-            {
-                foreach (IDisposable dependency in dependencies)
-                {
-                    dependency.Dispose();
-                }
+                dependency.Dispose();
             }
         }
     }

@@ -1,13 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace NotificationIcon.NET
+namespace NotificationIcon.NET;
+
+/// <summary>
+/// Represents a non-garbage collected, global heap allocation.
+/// </summary>
+public interface IHeapAlloc : IDisposable
 {
-    public interface IHeapAlloc : IDisposable
-    {
-        public IntPtr Ptr { get; }
-    }
+    /// <summary>
+    /// A pointer to the beginning of the allocation.
+    /// </summary>
+    public IntPtr Ptr { get; }
 }
