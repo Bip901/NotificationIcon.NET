@@ -26,6 +26,9 @@ public abstract class NotifyIcon : IDisposable
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     private delegate void MenuItemCallback(IntPtr menu);
 
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    private delegate void TrayCallback(IntPtr tray);
+
     /// <summary>
     /// A path to an icon on the file system. For Windows, this should be an ICO file. For Unix, this should be a PNG.
     /// </summary>
@@ -44,6 +47,35 @@ public abstract class NotifyIcon : IDisposable
     private string _iconPath;
 
     /// <summary>
+    /// The tooltip text shown when hovering over the tray icon. Null means no tooltip.
+    /// On Linux this property is silently ignored (AppIndicator does not support tooltips).
+    /// </summary>
+    public string? Tooltip
+    {
+        get => _tooltip;
+        set
+        {
+            if (!string.Equals(_tooltip, value))
+            {
+                _tooltip = value;
+                AllocateNewTray(true);
+            }
+        }
+    }
+    private string? _tooltip;
+
+    /// <summary>
+    /// Returns true if there are any subscribers to the <see cref="DoubleClick"/> event.
+    /// </summary>
+    protected bool HasDoubleClickSubscribers => DoubleClick != null;
+
+    /// <summary>
+    /// Raised when the user double-clicks the tray icon.
+    /// On Linux this event is never raised (AppIndicator does not support click events).
+    /// </summary>
+    public event EventHandler<TrayIconClickEventArgs>? DoubleClick;
+
+    /// <summary>
     /// The currently displayed menu items.
     /// </summary>
     public IReadOnlyList<MenuItem> MenuItems
@@ -59,6 +91,7 @@ public abstract class NotifyIcon : IDisposable
     private IReadOnlyList<MenuItem> _menuItems;
 
     private readonly List<MenuItemCallback> _callbacks;
+    private TrayCallback? _doubleClickCallback;
     private IHeapAlloc trayHandle;
     private IHeapAlloc menuItemsHandle;
     private Exception? trayLoopException;
@@ -69,15 +102,28 @@ public abstract class NotifyIcon : IDisposable
     /// </summary>
     /// <param name="iconPath">A path to an icon on the file system. For Windows, this should be an ICO file. For Unix, this should be a PNG.</param>
     /// <param name="menuItems">The menu items to display to the user when clicking the icon.</param>
+    /// <param name="tooltip">Optional tooltip shown when hovering over the icon. Ignored on Linux.</param>
+    /// <param name="onDoubleClick">Optional action invoked on double-click. Ignored on Linux.</param>
     /// <exception cref="PlatformNotSupportedException"></exception>
     /// <exception cref="InvalidOperationException"></exception>
-    public static NotifyIcon Create(string iconPath, IReadOnlyList<MenuItem> menuItems)
+    public static NotifyIcon Create(
+        string iconPath,
+        IReadOnlyList<MenuItem> menuItems,
+        string? tooltip = null,
+        Action<NotifyIcon>? onDoubleClick = null)
     {
+        NotifyIcon icon;
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-            return new WindowsNotifyIcon(iconPath, menuItems);
-        if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-            return new LinuxNotifyIcon(iconPath, menuItems);
-        throw new PlatformNotSupportedException();
+            icon = new WindowsNotifyIcon(iconPath, menuItems);
+        else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+            icon = new LinuxNotifyIcon(iconPath, menuItems);
+        else
+            throw new PlatformNotSupportedException();
+
+        icon.Tooltip = tooltip;
+        if (onDoubleClick != null)
+            icon.DoubleClick += (s, e) => onDoubleClick(icon);
+        return icon;
     }
 
     /// <summary>
@@ -269,6 +315,28 @@ public abstract class NotifyIcon : IDisposable
     }
 
     /// <summary>
+    /// Creates (or returns cached) a native callback for double-click events.
+    /// </summary>
+    protected nint GetOrCreateNativeDoubleClickCallback()
+    {
+        if (_doubleClickCallback == null)
+        {
+            _doubleClickCallback = trayPtr =>
+            {
+                try
+                {
+                    DoubleClick?.Invoke(this, new TrayIconClickEventArgs(this));
+                }
+                catch (Exception ex)
+                {
+                    trayLoopException = ex;
+                }
+            };
+        }
+        return Marshal.GetFunctionPointerForDelegate(_doubleClickCallback);
+    }
+
+    /// <summary>
     /// Shows this icon in the notification area and reacts to user events.
     /// Keeps blocking the thread as long as this icon is shown.
     /// </summary>
@@ -297,6 +365,7 @@ public abstract class NotifyIcon : IDisposable
             trayHandle.Dispose();
             menuItemsHandle.Dispose();
             _callbacks.Clear();
+            _doubleClickCallback = null;
             disposed = true;
         }
     }

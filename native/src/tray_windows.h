@@ -27,6 +27,7 @@ SOFTWARE.
 #define UNICODE
 
 #include <windows.h>
+#include <windowsx.h>
 #include <shellapi.h>
 
 #define EXPORT __declspec(dllexport)
@@ -40,6 +41,8 @@ static HWND hwnd;
 static HMENU hmenu = NULL;
 static LONG isTrayLoopRunning = 0;
 
+static struct tray* _current_tray = NULL;
+
 static LRESULT CALLBACK _tray_wnd_proc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
 	switch (msg) {
 	case WM_CLOSE:
@@ -49,11 +52,18 @@ static LRESULT CALLBACK _tray_wnd_proc(HWND hwnd, UINT msg, WPARAM wparam, LPARA
 		PostQuitMessage(0);
 		return 0;
 	case WM_TRAY_CALLBACK_MESSAGE:
-		if (lparam == WM_LBUTTONUP || lparam == WM_RBUTTONUP) {
-			POINT p;
-			if (!GetCursorPos(&p)) {
-				break;
+	{
+		UINT mouseEvent = LOWORD(lparam);
+		if (mouseEvent == WM_LBUTTONDBLCLK) {
+			if (_current_tray != NULL && _current_tray->double_click_cb != NULL) {
+				_current_tray->double_click_cb(_current_tray);
 			}
+			return 0;
+		}
+		if (mouseEvent == WM_RBUTTONUP) {
+			POINT p;
+			p.x = GET_X_LPARAM(wparam);
+			p.y = GET_Y_LPARAM(wparam);
 			SetForegroundWindow(hwnd);
 			if (hmenu == NULL) {
 				break;
@@ -69,6 +79,7 @@ static LRESULT CALLBACK _tray_wnd_proc(HWND hwnd, UINT msg, WPARAM wparam, LPARA
 			return 0;
 		}
 		break;
+	}
 	case WM_COMMAND:
 		{
 			UINT menuItemId = (UINT)wparam;
@@ -127,6 +138,7 @@ static HMENU _tray_menu(struct tray_menu* m, UINT* id) {
 }
 
 EXPORT void tray_update(struct tray* tray) {
+	_current_tray = tray;
 	HMENU prevmenu = hmenu;
 	UINT id = ID_TRAY_FIRST;
 	hmenu = _tray_menu(tray->menu, &id);
@@ -137,6 +149,12 @@ EXPORT void tray_update(struct tray* tray) {
 		DestroyIcon(nid.hIcon);
 	}
 	nid.hIcon = icon;
+	nid.uFlags |= NIF_TIP;
+	if (tray->tooltip != NULL) {
+		wcscpy_s(nid.szTip, sizeof(nid.szTip) / sizeof(WCHAR), (LPCWSTR)tray->tooltip);
+	} else {
+		nid.szTip[0] = L'\0';
+	}
 	Shell_NotifyIcon(NIM_MODIFY, &nid);
 
 	if (prevmenu != NULL) {
@@ -166,9 +184,13 @@ EXPORT INT32 tray_init(struct tray* tray) {
 	nid.cbSize = sizeof(NOTIFYICONDATA);
 	nid.hWnd = hwnd;
 	nid.uID = 0;
-	nid.uFlags = NIF_ICON | NIF_MESSAGE;
+	nid.uFlags = NIF_ICON | NIF_MESSAGE | NIF_TIP;
 	nid.uCallbackMessage = WM_TRAY_CALLBACK_MESSAGE;
 	Shell_NotifyIcon(NIM_ADD, &nid);
+
+	// Enable version 4 to receive WM_LBUTTONDBLCLK and extended cursor position in wparam
+	nid.uVersion = NOTIFYICON_VERSION_4;
+	Shell_NotifyIcon(NIM_SETVERSION, &nid);
 
 	tray_update(tray);
 	return 0;
@@ -218,4 +240,3 @@ EXPORT void tray_exit() {
 		{ }
 	}
 }
- 

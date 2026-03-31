@@ -1,6 +1,7 @@
 /*
 MIT License
 
+Copyright (c) 2026 Roman Anderson
 Copyright (c) 2023 Ori Almagor
 Copyright (c) 2017 Serge Zaitsev
 
@@ -29,6 +30,8 @@ struct tray_menu;
 
 struct tray {
 	char* icon;
+	char* tooltip;
+	void (*double_click_cb)(struct tray*);
 	struct tray_menu* menu;
 };
 

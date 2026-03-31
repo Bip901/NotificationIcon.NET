@@ -1,7 +1,7 @@
-cmake_minimum_required(VERSION 3.0.0)
-
+cmake_minimum_required(VERSION 3.5.0)
+ 
 project(notification_icon VERSION 2.0.0)
-
+ 
 add_library(notification_icon SHARED "src/main.c")
 if(UNIX AND NOT APPLE)
     find_package(PkgConfig REQUIRED)
