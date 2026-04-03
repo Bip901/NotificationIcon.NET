@@ -35,6 +35,10 @@ internal partial class LinuxNotifyIcon : NotifyIcon
     {
         [MarshalAs(UnmanagedType.LPUTF8Str)]
         public string iconPath;
+        // tooltip and double_click_cb are in the shared native struct layout but unused on Linux
+        [MarshalAs(UnmanagedType.LPUTF8Str)]
+        public string? tooltip;
+        public IntPtr doubleClickCb;
         public IntPtr menus;
     }
 
@@ -106,6 +110,8 @@ internal partial class LinuxNotifyIcon : NotifyIcon
         Tray tray = new()
         {
             iconPath = IconPath,
+            tooltip = null,    // Not supported on Linux/AppIndicator
+            doubleClickCb = IntPtr.Zero,
             menus = menuItemsPtr
         };
         return HeapAlloc<Tray>.Copy(tray);

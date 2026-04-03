@@ -21,6 +21,7 @@
 		<RuntimeIdentifiers>win-x64;linux-x64;</RuntimeIdentifiers>
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>
 		<DocumentationFile>$(MSBuildProjectDirectory)/bin/$(Configuration)/$(TargetFramework)/NotificationIcon.NET.xml</DocumentationFile>
+		<LangVersion>12</LangVersion>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="$(Configuration.Contains(Debug))">

@@ -35,6 +35,9 @@ internal partial class WindowsNotifyIcon : NotifyIcon
     {
         [MarshalAs(UnmanagedType.LPWStr)]
         public string iconPath;
+        [MarshalAs(UnmanagedType.LPWStr)]
+        public string? tooltip;
+        public IntPtr doubleClickCb;
         public IntPtr menus;
     }
 
@@ -106,6 +109,8 @@ internal partial class WindowsNotifyIcon : NotifyIcon
         Tray tray = new()
         {
             iconPath = IconPath,
+            tooltip = Tooltip,
+            doubleClickCb = GetOrCreateNativeDoubleClickCallback(),
             menus = menuItemsPtr
         };
         return HeapAlloc<Tray>.Copy(tray);
